@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diário — anotações do dia-a-dia</title>
+<style>
+  :root {
+    --bg: #f6f4ef;
+    --surface: #ffffff;
+    --surface-2: #fbfaf7;
+    --text: #2b2724;
+    --text-muted: #8a837b;
+    --border: #e7e2d9;
+    --accent: #d97757;
+    --accent-hover: #c4654a;
+    --accent-soft: #fdf0ea;
+    --danger: #b3402f;
+    --radius: 12px;
+    --shadow: 0 1px 3px rgba(43, 39, 36, 0.07);
+    --shadow-hover: 0 3px 10px rgba(43, 39, 36, 0.10);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.55;
+    min-height: 100vh;
+  }
+
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 24px 16px 80px;
+  }
+
+  header.topbar {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+
+  header.topbar h1 {
+    font-size: 1.9rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  header.topbar h1 .logo {
+    width: 40px; height: 40px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--accent);
+    border-radius: 50% 50% 50% 12px;
+    font-size: 1.25rem;
+    color: #fff;
+    box-shadow: var(--shadow);
+  }
+
+  header.topbar .tagline {
+    color: var(--text-muted);
+    font-size: 0.92rem;
+    margin-top: 2px;
+  }
+
+  /* ---- Formulário ---- */
+  .composer {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .composer-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .field-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  input[type="date"],
+  textarea,
+  input[type="search"] {
+    font: inherit;
+    color: var(--text);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    width: 100%;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  input[type="date"] { width: auto; }
+
+  textarea {
+    min-height: 90px;
+    resize: vertical;
+  }
+
+  input:focus-visible,
+  textarea:focus-visible,
+  button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .btn {
+    font: inherit;
+    font-weight: 600;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    padding: 9px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.05s, box-shadow 0.15s;
+    white-space: nowrap;
+  }
+
+  .btn:hover { background: var(--surface-2); box-shadow: var(--shadow); }
+  .btn:active { transform: translateY(1px); }
+
+  .btn-primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+
+  .btn-ghost {
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    padding: 6px 8px;
+  }
+  .btn-ghost:hover { color: var(--text); box-shadow: none; background: var(--surface-2); }
+
+  .btn-icon {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 4px 6px;
+    border-radius: 6px;
+    color: var(--text-muted);
+    line-height: 1;
+  }
+  .btn-icon:hover { background: var(--surface-2); color: var(--text); }
+  .btn-icon.danger:hover { color: var(--danger); background: var(--accent-soft); }
+
+  /* ---- Barra de busca e mês ---- */
+  .toolbar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .month-nav {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .month-label {
+    font-weight: 700;
+    font-size: 1.02rem;
+    min-width: 150px;
+    text-align: center;
+    text-transform: capitalize;
+  }
+
+  input[type="search"] { flex: 1; min-width: 140px; }
+
+  /* ---- Lista do diário ---- */
+  .day-group {
+    margin-bottom: 22px;
+  }
+
+  .day-heading {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 0 4px;
+    margin-bottom: 8px;
+  }
+
+  .day-heading .day-name {
+    font-weight: 800;
+    font-size: 1.05rem;
+  }
+
+  .day-heading .day-count {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1px 8px;
+    border-radius: 999px;
+  }
+
+  .entry-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .entry {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    box-shadow: var(--shadow);
+    position: relative;
+  }
+
+  .entry .entry-text {
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+  }
+
+  .entry .entry-actions {
+    position: absolute;
+    top: 8px; right: 8px;
+    display: flex;
+    gap: 2px;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  .entry:hover .entry-actions,
+  .entry:focus-within .entry-actions { opacity: 1; }
+
+  @media (hover: none) {
+    .entry .entry-actions { opacity: 1; }
+  }
+
+  .entry .entry-time {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 6px;
+    display: block;
+  }
+
+  .entry textarea {
+    font-size: 1rem;
+    font-family: inherit;
+    min-height: 80px;
+  }
+
+  .entry .edit-bar {
+    display: none;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .entry.editing .entry-actions { display: none; }
+  .entry.editing .edit-bar { display: flex; }
+
+  mark.hl {
+    background: var(--accent-soft);
+    color: var(--accent-hover);
+    border-radius: 3px;
+    padding: 0 1px;
+  }
+
+  .empty-state {
+    text-align: center;
+    color: var(--text-muted);
+    background: var(--surface);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 36px 20px;
+  }
+
+  .empty-state .emoji { font-size: 1.8rem; display: block; margin-bottom: 8px; }
+
+  /* ---- Rodapé / backup ---- */
+  footer {
+    margin-top: 40px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: center;
+  }
+
+  footer .backup-row { display: flex; gap: 8px; }
+
+  footer input[type="file"] { display: none; }
+
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    transform: translateX(-50%) translateY(12px);
+    background: var(--text);
+    color: var(--bg);
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s, transform 0.2s;
+    z-index: 50;
+    max-width: 90vw;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  dialog.confirm {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-hover);
+    padding: 20px;
+    max-width: 340px;
+    width: 90vw;
+    color: var(--text);
+  }
+  dialog.confirm::backdrop { background: rgba(43, 39, 36, 0.35); }
+  dialog.confirm p { margin-bottom: 16px; }
+  dialog.confirm .dialog-actions { display: flex; justify-content: flex-end; gap: 8px; }
+  .btn-danger {
+    background: var(--danger);
+    border-color: var(--danger);
+    color: #fff;
+  }
+  .btn-danger:hover { background: #9a3526; border-color: #9a3526; }
+
+  /* ---- Porta de acesso ---- */
+  body.locked .container,
+  body.locked .toast { display: none !important; }
+
+  #gate {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .gate-card { text-align: center; max-width: 320px; width: 100%; }
+  .gate-card .gate-logo { font-size: 2.6rem; }
+  .gate-card h2 { font-size: 1.6rem; letter-spacing: -0.02em; margin: 6px 0 2px; }
+  .gate-card .gate-hint { color: var(--text-muted); font-size: 0.9rem; }
+  .gate-card input#gate-input {
+    margin-top: 16px;
+    text-align: center;
+    letter-spacing: 0.4em;
+    font-size: 1.2rem;
+    width: 150px;
+    background: var(--surface);
+    border-radius: 10px;
+    padding: 10px 12px;
+  }
+  .gate-error {
+    min-height: 1.2em;
+    color: var(--danger);
+    font-weight: 600;
+    margin-top: 8px;
+    font-size: 0.85rem;
+  }
+  .gate-card.shake { animation: shake 0.3s; }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+  }
+
+  /* ---- Impressão (exportar PDF) ---- */
+  #print-view { display: none; }
+
+  @media print {
+    .container, #gate, .toast, dialog { display: none !important; }
+    #print-view { display: block !important; }
+    body { background: #fff; }
+  }
+
+  .pv-head h1 { font-size: 1.6rem; margin: 0 0 4px; }
+  .pv-head p { color: #555; font-size: 0.9rem; margin-bottom: 18px; }
+  .pv-day h2 {
+    font-size: 1.05rem;
+    margin: 18px 0 6px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 3px;
+    page-break-after: avoid;
+  }
+  .pv-entry { margin: 0 0 8px; }
+  .pv-entry .pv-time { color: #777777; font-size: 0.8rem; margin-left: 6px; }
+</style>
+</head>
+<body>
+<div id="gate" role="dialog" aria-modal="true" aria-label="Acesso ao diário">
+  <div class="gate-card" id="gate-card">
+    <div class="gate-logo" aria-hidden="true">📔</div>
+    <h2>Diário</h2>
+    <p class="gate-hint">Digite a senha de acesso</p>
+    <input type="password" id="gate-input" autocomplete="off" maxlength="6" aria-label="Senha de acesso">
+    <p class="gate-error" id="gate-error" aria-live="assertive"></p>
+  </div>
+</div>
+
+<div class="container">
+  <header class="topbar">
+    <h1><span class="logo" aria-hidden="true">📔</span> Diário</h1>
+    <p class="tagline">O diário do dia-a-dia dele — que você anota, pra história ficar contada.</p>
+  </header>
+
+  <form class="composer" id="composer">
+    <div class="composer-row">
+      <div>
+        <label class="field-label" for="entry-date">Data</label>
+        <input type="date" id="entry-date" required>
+      </div>
+    </div>
+    <div>
+      <label class="field-label" for="entry-text">O que aconteceu hoje?</label>
+      <textarea id="entry-text" placeholder="Ex.: prometeu terminar o relatório até sexta…"></textarea>
+    </div>
+    <div class="composer-row" style="justify-content: flex-end;">
+      <button type="submit" class="btn btn-primary">Anotar</button>
+    </div>
+  </form>
+
+  <div class="toolbar">
+    <input type="search" id="search" placeholder="Buscar no diário…" aria-label="Buscar anotações">
+    <div class="month-nav" role="group" aria-label="Navegar por mês">
+      <button type="button" class="btn" id="prev-month" aria-label="Mês anterior">←</button>
+      <span class="month-label" id="month-label" aria-live="polite"></span>
+      <button type="button" class="btn" id="next-month" aria-label="Próximo mês">→</button>
+      <button type="button" class="btn btn-ghost" id="today-btn">Hoje</button>
+    </div>
+  </div>
+
+  <main id="diary" aria-live="polite"></main>
+
+  <footer>
+    <div class="backup-row">
+      <button type="button" class="btn btn-ghost" id="pdf-btn">🖨 Exportar em PDF</button>
+      <button type="button" class="btn btn-ghost" id="word-btn">📄 Exportar em Word (.doc)</button>
+      <button type="button" class="btn btn-ghost" id="export-btn">⬇ Backup (.json)</button>
+      <button type="button" class="btn btn-ghost" id="import-btn">⬆ Importar backup</button>
+      <input type="file" id="import-file" accept=".json,application/json">
+    </div>
+    <span>Salvo no navegador deste computador (localStorage). Exporte de vez em quando.</span>
+  </footer>
+</div>
+
+<dialog class="confirm" id="confirm-dialog">
+  <p id="confirm-message">Apagar esta anotação?</p>
+  <div class="dialog-actions">
+    <button type="button" class="btn" id="confirm-cancel">Cancelar</button>
+    <button type="button" class="btn btn-danger" id="confirm-ok">Apagar</button>
+  </div>
+</dialog>
+
+<div id="print-view"></div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  var STORAGE_KEY = "ponytail.entries.v1";
+  var UNLOCK_CODE = "ss";
+  var UNLOCK_KEY = "diario.unlocked.v1";
+  var SITE_NAME = "Diário";
+  var MONTH_NAMES = ["janeiro", "fevereiro", "março", "abril", "maio", "junho",
+                     "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+  var DAY_NAMES = ["domingo", "segunda-feira", "terça-feira", "quarta-feira",
+                   "quinta-feira", "sexta-feira", "sábado"];
+
+  // ---------- Estado ----------
+  var entries = load();
+  var viewYear, viewMonth; // mês exibido (0-based)
+  var query = "";
+  var deletingId = null;
+
+  function load() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return [];
+      var data = JSON.parse(raw);
+      if (!Array.isArray(data)) return [];
+      return data.filter(function (e) {
+        return e && typeof e.id === "string" && typeof e.date === "string" &&
+               /^\d{4}-\d{2}-\d{2}$/.test(e.date) && typeof e.text === "string";
+      });
+    } catch (err) {
+      return [];
+    }
+  }
+
+  function save() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+      return true;
+    } catch (err) {
+      toast("Não foi possível salvar 🙁");
+      return false;
+    }
+  }
+
+  function uid() {
+    return Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8);
+  }
+
+  function todayISO() {
+    return localISO(new Date());
+  }
+
+  function localISO(d) {
+    return d.getFullYear() + "-" +
+           String(d.getMonth() + 1).padStart(2, "0") + "-" +
+           String(d.getDate()).padStart(2, "0");
+  }
+
+  function parseISO(iso) {
+    var parts = iso.split("-");
+    return new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+  }
+
+  function escapeHtml(s) {
+    return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  }
+
+  // ---------- Render ----------
+  function render() {
+    var diary = document.getElementById("diary");
+    var now = new Date();
+    var inSearch = query.trim().length > 0;
+
+    var visible = entries.filter(function (e) {
+      if (inSearch) {
+        return e.text.toLowerCase().indexOf(query.trim().toLowerCase()) !== -1;
+      }
+      return e.date.startsWith(viewYear + "-" + String(viewMonth + 1).padStart(2, "0"));
+    });
+
+    // Agrupar por data
+    var byDate = {};
+    visible.forEach(function (e) {
+      (byDate[e.date] = byDate[e.date] || []).push(e);
+    });
+
+    var dates = Object.keys(byDate).sort(function (a, b) { return b.localeCompare(a); });
+
+    var label = document.getElementById("month-label");
+    label.textContent = MONTH_NAMES[viewMonth] + " " + viewYear;
+    label.style.visibility = inSearch ? "hidden" : "visible";
+
+    var html = "";
+
+    if (dates.length === 0) {
+      var msg = inSearch
+        ? "Nada encontrado para \u201C" + escapeHtml(query.trim()) + "\u201D."
+        : (viewYear === now.getFullYear() && viewMonth === now.getMonth()
+            ? "Nenhuma anotação ainda neste mês.<br>O primeiro dia merece o primeiro parágrafo."
+            : "Nenhuma anotação neste mês.");
+      html = '<div class="empty-state"><span class="emoji">' +
+             (inSearch ? "🔍" : "🐴") + "</span>" + msg + "</div>";
+    } else {
+      dates.forEach(function (date) {
+        var d = parseISO(date);
+        var groups = byDate[date];
+        html += '<section class="day-group" data-date="' + date + '">';
+        var dayName = DAY_NAMES[d.getDay()];
+        dayName = dayName.charAt(0).toUpperCase() + dayName.slice(1);
+        html += '<div class="day-heading"><span class="day-name">' +
+                dayName + ", " + d.getDate() + " de " +
+                MONTH_NAMES[d.getMonth()] + (d.getFullYear() !== new Date().getFullYear() ? " de " + d.getFullYear() : "") +
+                '</span><span class="day-count">' + groups.length + "</span></div>";
+        html += '<div class="entry-list">';
+        groups.forEach(function (e) {
+          html += entryHtml(e, query.trim());
+        });
+        html += "</div></section>";
+      });
+    }
+
+    diary.innerHTML = html;
+  }
+
+  function highlight(text, q) {
+    if (!q) return escapeHtml(text);
+    var lower = text.toLowerCase();
+    var ql = q.toLowerCase();
+    var out = "", i = 0;
+    while (true) {
+      var idx = lower.indexOf(ql, i);
+      if (idx === -1) { out += escapeHtml(text.slice(i)); break; }
+      out += escapeHtml(text.slice(i, idx)) + "<mark class='hl'>" +
+             escapeHtml(text.slice(idx, idx + q.length)) + "</mark>";
+      i = idx + q.length;
+    }
+    return out;
+  }
+
+  function entryHtml(e, q) {
+    var t = e.createdAt ? new Date(e.createdAt) : null;
+    var time = t ? " gravado às " + String(t.getHours()).padStart(2, "0") + ":" + String(t.getMinutes()).padStart(2, "0") : "";
+    return '<article class="entry" data-id="' + escapeHtml(e.id) + '">' +
+           '<div class="entry-actions">' +
+           '<button type="button" class="btn-icon act-edit" title="Editar" aria-label="Editar anotação">✏️</button>' +
+           '<button type="button" class="btn-icon danger act-delete" title="Apagar" aria-label="Apagar anotação">🗑️</button>' +
+           "</div>" +
+           '<div class="entry-text">' + highlight(e.text, q) + "</div>" +
+           '<span class="entry-time">' + time + "</span>" +
+           '<textarea style="display:none" aria-label="Editar anotação"></textarea>' +
+           '<div class="edit-bar">' +
+           '<button type="button" class="btn act-cancel">Cancelar</button>' +
+           '<button type="button" class="btn btn-primary act-save">Salvar</button>' +
+           "</div>" +
+           "</article>";
+  }
+
+  // ---------- Ações ----------
+  function addEntry(date, text) {
+    entries.push({ id: uid(), date: date, text: text, createdAt: Date.now() });
+    if (!save()) return false;
+    var m = parseISO(date);
+    viewYear = m.getFullYear();
+    viewMonth = m.getMonth();
+    render();
+    return true;
+  }
+
+  function updateEntry(id, text) {
+    var e = entries.find(function (x) { return x.id === id; });
+    if (!e) return;
+    e.text = text;
+    save();
+    render();
+  }
+
+  function deleteEntry(id) {
+    entries = entries.filter(function (x) { return x.id !== id; });
+    save();
+    render();
+  }
+
+  function startEdit(article) {
+    var e = entries.find(function (x) { return x.id === article.dataset.id; });
+    if (!e) return;
+    article.classList.add("editing");
+    var ta = article.querySelector("textarea");
+    ta.value = e.text;
+    article.querySelector(".entry-text").style.display = "none";
+    article.querySelector(".entry-time").style.display = "none";
+    ta.style.display = "";
+    ta.style.minHeight = "100px";
+    ta.focus();
+  }
+
+  function cancelEdit(article) {
+    article.classList.remove("editing");
+    article.querySelector(".entry-text").style.display = "";
+    article.querySelector(".entry-time").style.display = "";
+    article.querySelector("textarea").style.display = "none";
+  }
+
+  var toastTimer = null;
+  function toast(msg) {
+    var el = document.getElementById("toast");
+    el.textContent = msg;
+    el.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { el.classList.remove("show"); }, 2600);
+  }
+
+  function askDelete(id) {
+    deletingId = id;
+    var dlg = document.getElementById("confirm-dialog");
+    dlg.showModal();
+  }
+
+  function backupFilename(ext) {
+    var d = new Date();
+    return "diario-" + todayISO() + "." + ext;
+  }
+
+  function exportEntries() {
+    var blob = new Blob([JSON.stringify(entries, null, 2)], { type: "application/json" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = backupFilename("json");
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    toast("Backup exportado ✔");
+  }
+
+  // ---------- Relatório compartilhado (PDF / Word) ----------
+  function fmtNowShort() {
+    var d = new Date();
+    return String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
+  }
+
+  function fmtGeneratedAt() {
+    var d = new Date();
+    return d.getDate() + " de " + MONTH_NAMES[d.getMonth()] + " de " + d.getFullYear() +
+           ", às " + fmtNowShort();
+  }
+
+  function dayHeadingYear(d) {
+    var dayName = DAY_NAMES[d.getDay()];
+    dayName = dayName.charAt(0).toUpperCase() + dayName.slice(1);
+    return dayName + ", " + d.getDate() + " de " + MONTH_NAMES[d.getMonth()] + " de " + d.getFullYear();
+  }
+
+  // Devolve o corpo do relatório (dias em ordem cronológica) ou null se não houver nada
+  function buildReportBody() {
+    if (!entries.length) return null;
+    var byDate = {};
+    entries.forEach(function (e) {
+      (byDate[e.date] = byDate[e.date] || []).push(e);
+    });
+    var dates = Object.keys(byDate).sort();
+    var out = "";
+    dates.forEach(function (date) {
+      var d = parseISO(date);
+      out += '<div class="pv-day"><h2>' + escapeHtml(dayHeadingYear(d)) + "</h2>";
+      byDate[date].sort(function (a, b) { return (a.createdAt || 0) - (b.createdAt || 0); });
+      byDate[date].forEach(function (e) {
+        out += '<p class="pv-entry">' + escapeHtml(e.text) +
+               (e.createdAt ? '<span class="pv-time">(gravado às ' + fmtCreatedAt(e.createdAt) + ")</span>" : "") +
+               "</p>";
+      });
+      out += "</div>";
+    });
+    return out;
+  }
+
+  function fmtCreatedAt(ts) {
+    var t = new Date(ts);
+    return String(t.getHours()).padStart(2, "0") + ":" + String(t.getMinutes()).padStart(2, "0");
+  }
+
+  // ---------- Exportar em PDF (via diálogo de impressão) ----------
+  function exportPdf() {
+    var body = buildReportBody();
+    if (!body) { toast("Nada para exportar ainda"); return; }
+    var pv = document.getElementById("print-view");
+    pv.innerHTML =
+      '<div class="pv-head"><h1>' + SITE_NAME + "</h1>" +
+      "<p>Gerado em " + escapeHtml(fmtGeneratedAt()) + " — " + entries.length +
+      (entries.length === 1 ? " anotação" : " anotações") +
+      "</p></div>" + body;
+    var oldTitle = document.title;
+    document.title = "diario-" + todayISO();
+    toast("No diálogo, escolha “Salvar como PDF”");
+    setTimeout(function () { window.print(); }, 80);
+    window.addEventListener("afterprint", function restore() {
+      document.title = oldTitle;
+      window.removeEventListener("afterprint", restore);
+    });
+  }
+
+  // ---------- Exportar em Word (.doc) ----------
+  function exportWord() {
+    var body = buildReportBody();
+    if (!body) { toast("Nada para exportar ainda"); return; }
+    var html =
+      '<!DOCTYPE html><html><head><meta charset="utf-8">' +
+      "<title>" + SITE_NAME + "</title>" +
+      '<style>body{font-family:Calibri,Arial,sans-serif;font-size:11pt;color:#222}' +
+      "h1{font-size:18pt;margin:0 0 4pt}h2{font-size:12pt;margin:14pt 0 6pt;border-bottom:1px solid #999;padding-bottom:2pt}" +
+      ".pv-generated{color:#555;font-size:9pt;margin-bottom:12pt}" +
+      ".pv-time{color:#777;font-size:9pt;margin-left:6pt}</style>" +
+      '</head><body dir="auto"><h1>' + SITE_NAME + "</h1>" +
+      '<p class="pv-generated">Gerado em ' + escapeHtml(fmtGeneratedAt()) + "</p>" +
+      body + "</body></html>";
+
+    var blob = new Blob(["\ufeff", html], { type: "application/msword" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = backupFilename("doc");
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    toast("Arquivo Word exportado ✔");
+  }
+
+  function importEntries(file) {
+    var reader = new FileReader();
+    reader.onload = function () {
+      var ok = false, count = 0;
+      try {
+        var data = JSON.parse(reader.result);
+        if (!Array.isArray(data)) throw new Error("formato");
+        data.forEach(function (e) {
+          if (e && typeof e.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(e.date) &&
+              typeof e.text === "string" && e.text.trim()) {
+            entries.push({
+              id: e.id || uid(),
+              date: e.date,
+              text: e.text,
+              createdAt: typeof e.createdAt === "number" ? e.createdAt : Date.now()
+            });
+            count++;
+          }
+        });
+        ok = true;
+      } catch (err) {
+        toast("Arquivo inválido 🙁");
+      }
+      if (ok) {
+        entries.sort(function (a, b) { return a.createdAt - b.createdAt; });
+        save();
+        render();
+        toast(count + (count === 1 ? " anotação importada ✔" : " anotações importadas ✔"));
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  // ---------- Eventos ----------
+  var dateInput = document.getElementById("entry-date");
+  var textInput = document.getElementById("entry-text");
+
+  dateInput.value = todayISO();
+
+  document.getElementById("composer").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var text = textInput.value.trim();
+    if (!text) { textInput.focus(); return; }
+    var date = dateInput.value || todayISO();
+    if (addEntry(date, text)) {
+      textInput.value = "";
+      toast("Anotado ✔");
+      document.getElementById("search").value = "";
+      query = "";
+      render();
+    }
+  });
+
+  document.getElementById("search").addEventListener("input", function (ev) {
+    query = ev.target.value;
+    render();
+  });
+
+  function setMonth(y, m) {
+    viewYear = y; viewMonth = m;
+    render();
+  }
+
+  document.getElementById("prev-month").addEventListener("click", function () {
+    var m = viewMonth - 1, y = viewYear;
+    if (m < 0) { m = 11; y--; }
+    setMonth(y, m);
+  });
+
+  document.getElementById("next-month").addEventListener("click", function () {
+    var m = viewMonth + 1, y = viewYear;
+    if (m > 11) { m = 0; y++; }
+    setMonth(y, m);
+  });
+
+  document.getElementById("today-btn").addEventListener("click", function () {
+    var now = new Date();
+    setMonth(now.getFullYear(), now.getMonth());
+  });
+
+  var diary = document.getElementById("diary");
+  diary.addEventListener("click", function (ev) {
+    var btn = ev.target.closest("button");
+    if (!btn) return;
+    var article = ev.target.closest(".entry");
+    if (!article) return;
+    var id = article.dataset.id;
+    if (btn.classList.contains("act-delete")) askDelete(id);
+    else if (btn.classList.contains("act-edit")) startEdit(article);
+    else if (btn.classList.contains("act-cancel")) cancelEdit(article);
+    else if (btn.classList.contains("act-save")) {
+      var ta = article.querySelector("textarea");
+      var text = ta.value.trim();
+      if (!text) { ta.focus(); return; }
+      updateEntry(id, text);
+      toast("Salvo ✔");
+    }
+  });
+
+  var confirmDlg = document.getElementById("confirm-dialog");
+  document.getElementById("confirm-ok").addEventListener("click", function () {
+    if (deletingId) deleteEntry(deletingId);
+    deletingId = null;
+    confirmDlg.close();
+    toast("Anotação apagada");
+  });
+  document.getElementById("confirm-cancel").addEventListener("click", function () {
+    deletingId = null;
+    confirmDlg.close();
+  });
+
+  document.getElementById("pdf-btn").addEventListener("click", exportPdf);
+  document.getElementById("word-btn").addEventListener("click", exportWord);
+  document.getElementById("export-btn").addEventListener("click", exportEntries);
+  document.getElementById("import-btn").addEventListener("click", function () {
+    document.getElementById("import-file").click();
+  });
+  document.getElementById("import-file").addEventListener("change", function (ev) {
+    if (ev.target.files && ev.target.files[0]) importEntries(ev.target.files[0]);
+    ev.target.value = "";
+  });
+
+  // Ctrl+Enter no texto anota direto
+  textInput.addEventListener("keydown", function (ev) {
+    if ((ev.ctrlKey || ev.metaKey) && ev.key === "Enter") {
+      document.getElementById("composer").requestSubmit();
+    }
+  });
+
+  // ---------- Porta de acesso ----------
+  var gateCard = document.getElementById("gate-card");
+  var gateInput = document.getElementById("gate-input");
+  var gateSeq = "";
+
+  function isLocked() {
+    return document.body.classList.contains("locked");
+  }
+
+  function setLocked(locked) {
+    document.body.classList.toggle("locked", locked);
+    document.getElementById("gate").style.display = locked ? "" : "none";
+    if (locked) {
+      gateInput.value = "";
+      document.getElementById("gate-error").textContent = "";
+      setTimeout(function () { gateInput.focus(); }, 50);
+    }
+  }
+
+  function gateFail() {
+    document.getElementById("gate-error").textContent = "Senha incorreta.";
+    gateCard.classList.remove("shake");
+    gateInput.value = "";
+    // reinicia a animação de tremida
+    void gateCard.offsetWidth;
+    gateCard.classList.add("shake");
+    setTimeout(function () { gateInput.focus(); }, 10);
+  }
+
+  function tryUnlock(code) {
+    if (String(code).toLowerCase() === UNLOCK_CODE) {
+      try { sessionStorage.setItem(UNLOCK_KEY, "1"); } catch (e) { /* ignora */ }
+      setLocked(false);
+    }
+  }
+
+  gateInput.addEventListener("input", function () {
+    document.getElementById("gate-error").textContent = "";
+    var v = gateInput.value.toLowerCase();
+    if (v === UNLOCK_CODE) tryUnlock(v);
+    else if (v.length >= UNLOCK_CODE.length) gateFail();
+  });
+
+  gateInput.addEventListener("keydown", function (ev) {
+    if (ev.key === "Enter") {
+      ev.preventDefault();
+      if (gateInput.value.toLowerCase() === UNLOCK_CODE) tryUnlock(gateInput.value.toLowerCase());
+      else gateFail();
+    }
+  });
+
+  // Também funciona digitando s + s em qualquer lugar da tela
+  document.addEventListener("keydown", function (ev) {
+    if (!isLocked() || ev.target === gateInput || document.getElementById("gate").style.display === "none") {
+      gateSeq = "";
+      return;
+    }
+    if (ev.key.length === 1) {
+      gateSeq = (gateSeq + ev.key.toLowerCase()).slice(-UNLOCK_CODE.length);
+      if (gateSeq === UNLOCK_CODE) tryUnlock(gateSeq);
+    }
+  });
+
+  // ---------- Init ----------
+  var now = new Date();
+  viewYear = now.getFullYear();
+  viewMonth = now.getMonth();
+  render();
+
+  var unlockedSession = false;
+  try { unlockedSession = sessionStorage.getItem(UNLOCK_KEY) === "1"; } catch (e) { /* ignora */ }
+  setLocked(!unlockedSession);
+})();
+</script>
+</body>
+</html>
