@@ -183,6 +183,8 @@
     display: flex;
     align-items: center;
     gap: 4px;
+    flex-wrap: wrap;
+    justify-content: center;
   }
 
   .month-label {
@@ -238,11 +240,12 @@
     overflow-wrap: break-word;
   }
 
+  /* flutua à direita: o texto contorna os botões em vez de ficar por baixo */
   .entry .entry-actions {
-    position: absolute;
-    top: 8px; right: 8px;
+    float: right;
     display: flex;
     gap: 2px;
+    margin: -2px -4px 4px 10px;
     opacity: 0;
     transition: opacity 0.15s;
   }
@@ -307,7 +310,7 @@
     align-items: center;
   }
 
-  footer .backup-row { display: flex; gap: 8px; }
+  footer .backup-row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
 
   footer input[type="file"] { display: none; }
 
